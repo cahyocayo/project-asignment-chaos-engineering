@@ -1,0 +1,30 @@
+name: Network Latency Chaos Experiment
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 3 * * *"  # Runs daily at 3 AM
+
+jobs:
+  run-litmus-chaos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Kubernetes CLI
+        uses: azure/setup-kubectl@v1
+        with:
+          version: 'v1.20.0'
+
+      - name: Apply Chaos Experiment
+        run: |
+          kubectl apply -f chaos-service-account.yml
+          kubectl apply -f pod-network-latency-experiment.yml
+          kubectl apply -f chaosengine-network-latency.yml
+
+      - name: Check Chaos Experiment Status
+        run: |
+          kubectl describe chaosengine pod-network-latency-chaos -n default
