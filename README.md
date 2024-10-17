@@ -11,3 +11,10 @@ kubectl apply -f pod-network-latency-experiment.yml
 
 # Apply the ChaosEngine to trigger the experiment
 kubectl apply -f chaosengine-network-latency.yml
+
+# Describe the ChaosEngine to view experiment status
+kubectl describe chaosengine pod-network-latency-chaos -n default
+
+# View the logs of the running chaos experiment
+kubectl logs -f <chaos-pod-name> -n default
+
