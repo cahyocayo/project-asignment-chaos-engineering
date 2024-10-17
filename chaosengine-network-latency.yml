@@ -1,0 +1,27 @@
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: pod-network-latency-chaos
+  namespace: default
+spec:
+  appinfo:
+    appns: "default"  # Namespace where the application is running
+    applabel: "app=my-core-service"  # Label of the target application
+    appkind: deployment
+  # Automatically start the chaos experiment
+  engineState: "active"
+  # Role for running chaos operations
+  chaosServiceAccount: litmus
+  experiments:
+    - name: pod-network-latency
+      spec:
+        components:
+          env:
+            - name: TOTAL_CHAOS_DURATION
+              value: "60"  # Total duration of latency injection
+            - name: NETWORK_LATENCY
+              value: "500"  # Latency to be injected (in milliseconds)
+            - name: CHAOS_INTERVAL
+              value: "10"
+            - name: NETWORK_LATENCY_PERCENT
+              value: "100"
