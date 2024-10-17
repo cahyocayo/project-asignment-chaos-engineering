@@ -1,0 +1,44 @@
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosExperiment
+metadata:
+  name: pod-network-latency
+  namespace: litmus
+spec:
+  definition:
+    scope: Namespaced
+    permissions:
+      - apiGroups: [""]
+        resources: ["pods"]
+        verbs: ["create", "delete", "list", "get", "patch", "update", "watch"]
+      - apiGroups: ["apps"]
+        resources: ["deployments"]
+        verbs: ["get", "list"]
+    image: "litmuschaos/go-runner:latest"
+    imagePullPolicy: Always
+    args:
+      - -c
+      - ./experiments/generic/pod_network_latency/pod-network-latency
+    env:
+      # Total duration for which chaos is injected (in seconds)
+      - name: TOTAL_CHAOS_DURATION
+        value: "60"  # Inject latency for 60 seconds
+      # Time interval between chaos injections (in seconds)
+      - name: CHAOS_INTERVAL
+        value: "10"
+      # Percentage of packets to apply latency to
+      - name: NETWORK_LATENCY_PERCENT
+        value: "100"  # Apply latency to 100% of traffic
+      # The target latency in milliseconds
+      - name: NETWORK_LATENCY
+        value: "500"  # Inject 500ms of latency
+      # The name of the application under test (app label)
+      - name: APP_LABEL
+        value: "app=my-core-service"  # Replace with your core network service's label
+      # Namespace where the application is running
+      - name: APP_NAMESPACE
+        value: "default"
+      # Name of the target container inside the pod (optional)
+      - name: TARGET_CONTAINER
+        value: ""
+    labels:
+      name: pod-network-latency
